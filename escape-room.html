@@ -3,11 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Escape Room Administrasi FAIR MODE</title>
+
+<title>Pemburu Surat Rahasia</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 
 <style>
+
+*{
+box-sizing:border-box;
+}
 
 body{
 margin:0;
@@ -28,22 +33,32 @@ color:#60a5fa;
 .container{
 max-width:1300px;
 margin:auto;
-padding:15px;
+padding:14px;
 }
 
 .topbar{
 display:flex;
-gap:10px;
 justify-content:space-between;
 flex-wrap:wrap;
+gap:10px;
 margin-bottom:15px;
 }
 
 .card{
 background:#111827;
-padding:14px;
+padding:12px;
 border-radius:12px;
 border:1px solid #334155;
+font-size:14px;
+}
+
+.story{
+background:#0b1220;
+padding:14px;
+border-left:4px solid #3b82f6;
+border-radius:10px;
+margin-bottom:15px;
+line-height:1.6;
 }
 
 .grid{
@@ -54,38 +69,57 @@ gap:15px;
 
 .bank,.workspace{
 background:#111827;
-padding:14px;
 border-radius:14px;
+padding:14px;
 border:1px solid #334155;
 }
 
 .item{
 background:#1e293b;
-padding:12px;
-margin:8px 0;
-border-radius:10px;
-cursor:grab;
+padding:14px;
+margin:10px 0;
+border-radius:12px;
+cursor:pointer;
+transition:0.2s;
+font-size:15px;
+border:2px solid transparent;
+}
+
+.item:hover{
+background:#334155;
+}
+
+.selected{
+border:2px solid #facc15;
+background:#3b82f6;
 }
 
 .zone{
 border:2px dashed #3b82f6;
 border-radius:12px;
-min-height:70px;
+min-height:80px;
 padding:10px;
 margin:10px 0;
+cursor:pointer;
+transition:0.2s;
+}
+
+.zone:hover{
+background:#0f172a;
 }
 
 .label{
 font-size:12px;
 color:#93c5fd;
+margin-bottom:5px;
 }
 
 button{
 width:100%;
 padding:14px;
-margin-top:10px;
 border:none;
 border-radius:12px;
+margin-top:10px;
 cursor:pointer;
 font-weight:600;
 }
@@ -105,14 +139,8 @@ margin-top:15px;
 padding:14px;
 background:#0b1220;
 border-left:4px solid #22c55e;
+border-radius:10px;
 white-space:pre-line;
-}
-
-.story{
-margin-bottom:15px;
-padding:14px;
-background:#0b1220;
-border-left:4px solid #3b82f6;
 line-height:1.6;
 }
 
@@ -124,174 +152,353 @@ color:#4ade80;
 }
 
 @media(max-width:900px){
+
 .grid{
 grid-template-columns:1fr;
 }
+
+.item{
+font-size:16px;
+padding:16px;
+}
+
+.zone{
+min-height:90px;
+}
+
 }
 
 </style>
 </head>
 <body>
 
-<header>ESCAPE ROOM ADMINISTRASI — FAIR MODE</header>
+<header>
+ESCAPE ROOM ADMINISTRASI MOBILE
+</header>
 
 <div class="container">
 
 <div class="topbar">
-<div class="card">Level: <span id="level">1</span>/10</div>
-<div class="card">Timer: <span id="timer">120</span></div>
-<div class="card">Score: <span id="score">0</span></div>
-<div class="card">Revisi: <span id="retry">0</span></div>
+
+<div class="card">
+🎯 Level: <span id="level">1</span>/10
 </div>
 
-<div class="story" id="story"></div>
+<div class="card">
+🏆 Score: <span id="score">0</span>
+</div>
+
+<div class="card">
+⏳ Timer: <span id="timer">120</span>
+</div>
+
+<div class="card">
+🔁 Revisi: <span id="retry">0</span>
+</div>
+
+</div>
+
+<div class="story" id="story">
+Memulai misi administrasi...
+</div>
 
 <div class="grid">
 
+<!-- BANK -->
 <div class="bank">
-<h3>ARSIP</h3>
+
+<h3>ARSIP DOKUMEN</h3>
+
 <div id="bank"></div>
+
 </div>
 
+<!-- WORKSPACE -->
 <div class="workspace">
 
-<h3>RUANG SUSUN</h3>
+<h3>RUANG PENYUSUNAN</h3>
 
-<div class="zone" id="z_kop" ondrop="drop(event)" ondragover="allow(event)">
-<div class="label">KOP</div></div>
+<div class="zone" data-zone="kop">
+<div class="label">KOP SURAT</div>
+</div>
 
-<div class="zone" id="z_nomor" ondrop="drop(event)" ondragover="allow(event)">
-<div class="label">NOMOR</div></div>
+<div class="zone" data-zone="nomor">
+<div class="label">NOMOR SURAT</div>
+</div>
 
-<div class="zone" id="z_tanggal" ondrop="drop(event)" ondragover="allow(event)">
-<div class="label">TANGGAL</div></div>
+<div class="zone" data-zone="tanggal">
+<div class="label">TANGGAL</div>
+</div>
 
-<div class="zone" id="z_perihal" ondrop="drop(event)" ondragover="allow(event)">
-<div class="label">PERIHAL</div></div>
+<div class="zone" data-zone="perihal">
+<div class="label">PERIHAL</div>
+</div>
 
-<div class="zone" id="z_isi" ondrop="drop(event)" ondragover="allow(event)">
-<div class="label">ISI</div></div>
+<div class="zone" data-zone="isi">
+<div class="label">ISI SURAT</div>
+</div>
 
-<div class="zone" id="z_penutup" ondrop="drop(event)" ondragover="allow(event)">
-<div class="label">PENUTUP</div></div>
+<div class="zone" data-zone="penutup">
+<div class="label">PENUTUP</div>
+</div>
 
-<div class="zone" id="z_ttd" ondrop="drop(event)" ondragover="allow(event)">
-<div class="label">TTD</div></div>
+<div class="zone" data-zone="ttd">
+<div class="label">TANDA TANGAN</div>
+</div>
 
-<button class="check" onclick="checkAnswer()">CEK</button>
-<button class="next" id="nextBtn" style="display:none" onclick="nextLevel()">LEVEL BERIKUT</button>
+<button class="check" onclick="checkAnswer()">
+CEK JAWABAN
+</button>
 
-<div class="result" id="result"></div>
+<button class="next" id="nextBtn" onclick="nextLevel()" style="display:none;">
+LANJUT LEVEL
+</button>
 
+<div class="result" id="result">
+Pilih item lalu tap zona tujuan.
 </div>
 
 </div>
+
+</div>
+
 </div>
 
 <script>
 
-const sekolah=["SMPN 1 Bandung","SMA Nusantara","SMK Teknologi"];
-const perihal=["Undangan Rapat","Pemberitahuan","Surat Tugas","Undangan Seminar"];
-const isi=["Kegiatan resmi sekolah.","Mohon hadir tepat waktu.","Acara wajib diikuti siswa."];
-const penutup=["Demikian surat ini.","Atas perhatian terima kasih."];
-const jabatan=["Kepala Sekolah","Ketua OSIS","Wakil Kepala"];
+/* =====================
+DATABASE
+===================== */
 
-const distractors=["Cuaca cerah","Motor baru","Liburan seru","Makan siang"];
+const sekolah=[
+"SMP Negeri 1 Bandung",
+"SMA Nusantara",
+"SMK Teknologi Indonesia",
+"SMP Harapan Bangsa",
+"SMA Pertiwi"
+];
+
+const perihalList=[
+"Undangan Rapat",
+"Surat Tugas",
+"Pemberitahuan Kegiatan",
+"Undangan Seminar",
+"Undangan Pelatihan"
+];
+
+const isiList=[
+"Kegiatan akan dilaksanakan sesuai jadwal resmi sekolah.",
+"Seluruh peserta diharapkan hadir tepat waktu.",
+"Acara ini bertujuan meningkatkan disiplin siswa.",
+"Surat ini merupakan pemberitahuan resmi sekolah."
+];
+
+const penutupList=[
+"Demikian surat ini kami sampaikan.",
+"Atas perhatian Saudara kami ucapkan terima kasih.",
+"Semoga kegiatan berjalan lancar."
+];
+
+const jabatanList=[
+"Kepala Sekolah",
+"Ketua OSIS",
+"Wakil Kepala Sekolah",
+"Pembina Pramuka"
+];
+
+const distractors=[
+"Cuaca hari ini cerah",
+"Motor baru sekolah",
+"Liburan menyenangkan",
+"Pertandingan berlangsung seru",
+"Makan siang bersama"
+];
+
+const stories=[
+"Level 1 — Anda memasuki ruang administrasi.",
+"Level 2 — Arsip mulai berantakan.",
+"Level 3 — Kepala sekolah meminta surat segera selesai.",
+"Level 4 — Dokumen palsu mulai muncul.",
+"Level 5 — Sistem keamanan aktif.",
+"Level 6 — Surat rahasia ditemukan.",
+"Level 7 — Waktu semakin sedikit.",
+"Level 8 — Arsip digital rusak.",
+"Level 9 — Ruang utama hampir terbuka.",
+"Level 10 — Final Room Administrasi."
+];
+
+/* =====================
+GLOBAL
+===================== */
 
 let level=1;
 let score=0;
-let timer=120;
 let retry=0;
+let timer=120;
 let interval;
+let selectedItem=null;
 
 const correct={
-z_kop:"kop",
-z_nomor:"nomor",
-z_tanggal:"tanggal",
-z_perihal:"perihal",
-z_isi:"isi",
-z_penutup:"penutup",
-z_ttd:"ttd"
+kop:"kop",
+nomor:"nomor",
+tanggal:"tanggal",
+perihal:"perihal",
+isi:"isi",
+penutup:"penutup",
+ttd:"ttd"
 };
 
-function rand(a){
-return a[Math.floor(Math.random()*a.length)];
+/* =====================
+UTIL
+===================== */
+
+function rand(arr){
+return arr[Math.floor(Math.random()*arr.length)];
 }
 
-function shuffle(a){
-return a.sort(()=>Math.random()-0.5);
+function shuffle(arr){
+return arr.sort(()=>Math.random()-0.5);
 }
 
-function generate(){
+/* =====================
+GENERATE LEVEL
+===================== */
 
-document.getElementById("story").innerText=
-"Level "+level+" — Buka ruang administrasi.";
+function generateLevel(){
 
 document.getElementById("level").innerText=level;
+
+document.getElementById("story").innerText=
+stories[level-1];
+
 document.getElementById("retry").innerText=retry;
 
-let items=[
+document.getElementById("nextBtn").style.display="none";
+
+clearZones();
+
+const data=[
 
 {id:"kop",text:rand(sekolah)},
-{id:"nomor",text:"Nomor "+Math.floor(Math.random()*999)},
-{id:"tanggal",text:"Bandung "+(1+Math.floor(Math.random()*28))+"/5/2026"},
-{id:"perihal",text:rand(perihal)},
-{id:"isi",text:rand(isi)},
-{id:"penutup",text:rand(penutup)},
-{id:"ttd",text:rand(jabatan)}
+{id:"nomor",text:"Nomor: "+Math.floor(Math.random()*900)},
+{id:"tanggal",text:"Bandung, "+(Math.floor(Math.random()*28)+1)+" Mei 2026"},
+{id:"perihal",text:"Perihal: "+rand(perihalList)},
+{id:"isi",text:rand(isiList)},
+{id:"penutup",text:rand(penutupList)},
+{id:"ttd",text:rand(jabatanList)}
 
 ];
 
 shuffle(distractors).slice(0,3).forEach((d,i)=>{
-items.push({id:"fake"+i,text:d});
+
+data.push({
+id:"fake"+i,
+text:d
 });
 
-render(shuffle(items));
+});
+
+renderItems(shuffle(data));
 
 startTimer();
 
 }
 
-function render(items){
+/* =====================
+RENDER ITEMS
+===================== */
+
+function renderItems(items){
+
+const bank=document.getElementById("bank");
 
 bank.innerHTML="";
 
-items.forEach(i=>{
+items.forEach(obj=>{
 
-let d=document.createElement("div");
+const div=document.createElement("div");
 
-d.className="item";
-d.id=i.id;
-d.innerText=i.text;
-d.draggable=true;
-d.ondragstart=drag;
+div.className="item";
 
-bank.appendChild(d);
+div.innerText=obj.text;
+
+div.dataset.id=obj.id;
+
+div.onclick=()=>selectItem(div);
+
+bank.appendChild(div);
 
 });
 
 }
 
-function allow(e){e.preventDefault();}
-function drag(e){e.dataTransfer.setData("text",e.target.id);}
+/* =====================
+SELECT ITEM
+===================== */
 
-function drop(e){
+function selectItem(el){
 
-e.preventDefault();
+document.querySelectorAll(".item").forEach(i=>{
+i.classList.remove("selected");
+});
 
-let id=e.dataTransfer.getData("text");
-let item=document.getElementById(id);
+el.classList.add("selected");
 
-if(!e.currentTarget.querySelector(".item"))
-e.currentTarget.appendChild(item);
+selectedItem=el;
 
 }
+
+/* =====================
+ZONE CLICK
+===================== */
+
+document.querySelectorAll(".zone").forEach(zone=>{
+
+zone.onclick=()=>{
+
+if(!selectedItem) return;
+
+if(zone.querySelector(".item")) return;
+
+zone.appendChild(selectedItem);
+
+selectedItem.classList.remove("selected");
+
+selectedItem=null;
+
+};
+
+});
+
+/* =====================
+CLEAR
+===================== */
+
+function clearZones(){
+
+document.querySelectorAll(".zone").forEach(z=>{
+
+const item=z.querySelector(".item");
+
+if(item){
+document.getElementById("bank").appendChild(item);
+}
+
+});
+
+}
+
+/* =====================
+TIMER
+===================== */
 
 function startTimer(){
 
 clearInterval(interval);
 
 timer=120;
+
+document.getElementById("timer").innerText=timer;
 
 interval=setInterval(()=>{
 
@@ -305,9 +512,10 @@ clearInterval(interval);
 
 score=Math.max(0,score-5);
 
-result.innerText="Waktu habis! -5 poin";
-
 document.getElementById("score").innerText=score;
+
+document.getElementById("result").innerText=
+"Waktu habis. -5 poin";
 
 }
 
@@ -315,30 +523,45 @@ document.getElementById("score").innerText=score;
 
 }
 
+/* =====================
+CHECK
+===================== */
+
 function checkAnswer(){
 
 retry++;
+
 document.getElementById("retry").innerText=retry;
 
 let benar=0;
 
 for(let z in correct){
 
-let item=document.getElementById(z).querySelector(".item");
+const zone=document.querySelector(`[data-zone="${z}"]`);
 
-if(item&&item.id===correct[z]) benar++;
+const item=zone.querySelector(".item");
+
+if(item && item.dataset.id===correct[z]){
+benar++;
+}
 
 }
 
-let levelScore=benar*5;
+let levelScore=0;
 
-levelScore+=Math.floor(timer/10);
+levelScore += benar*5;
 
-levelScore-=retry*3;
+levelScore += Math.floor(timer/10);
 
-if(benar===7) levelScore+=10;
+levelScore -= retry*2;
 
-if(levelScore<0) levelScore=0;
+if(benar===7){
+levelScore +=10;
+}
+
+if(levelScore<0){
+levelScore=0;
+}
 
 if(benar===7){
 
@@ -348,55 +571,63 @@ document.getElementById("score").innerText=score;
 
 clearInterval(interval);
 
-result.innerText=
-`BERHASIL
+document.getElementById("result").innerText=
+`LEVEL BERHASIL
+
 Benar: ${benar}/7
 Bonus waktu: ${Math.floor(timer/10)}
-Penalty revisi: ${retry*3}
+Penalty revisi: ${retry*2}
+
 Skor level: ${levelScore}`;
 
-nextBtn.style.display="block";
+document.getElementById("nextBtn").style.display="block";
 
 }else{
 
-result.innerText=
-`Masih salah
-Benar ${benar}/7
-Revisi menambah penalty`;
+document.getElementById("result").innerText=
+`Masih ada kesalahan.
+
+Benar: ${benar}/7
+
+Semakin banyak revisi,
+nilai akan berkurang.`;
 
 }
 
 }
+
+/* =====================
+NEXT LEVEL
+===================== */
 
 function nextLevel(){
 
 level++;
 retry=0;
 
-document.querySelectorAll(".zone").forEach(z=>{
-
-let i=z.querySelector(".item");
-if(i) bank.appendChild(i);
-
-});
-
-nextBtn.style.display="none";
-
 if(level>10){
 
 let rank="Pemula";
 
-if(score>=500) rank="MASTER ADMINISTRASI";
-else if(score>=350) rank="ARSIP SENIOR";
-else if(score>=200) rank="STAF TU";
+if(score>=500){
+rank="MASTER ADMINISTRASI";
+}else if(score>=350){
+rank="ARSIP SENIOR";
+}else if(score>=200){
+rank="STAF TU";
+}
 
 document.body.innerHTML=
 `
 <div class="complete">
 
-🏆 SELESAI
+🏆 ESCAPE ROOM SELESAI
+
+<br><br>
 
 Final Score: ${score}
+
+<br><br>
 
 Rank: ${rank}
 
@@ -404,13 +635,18 @@ Rank: ${rank}
 `;
 
 return;
-}
-
-generate();
 
 }
 
-generate();
+generateLevel();
+
+}
+
+/* =====================
+START
+===================== */
+
+generateLevel();
 
 </script>
 
