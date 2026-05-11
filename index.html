@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Surat Resmi Trainer - School Edition</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Poppins,sans-serif;
+    background:radial-gradient(circle at top,#0b1220,#020617);
+    color:#e2e8f0;
+}
+
+header{
+    background:#111827;
+    border-bottom:1px solid #334155;
+    text-align:center;
+    padding:18px;
+    font-family:Orbitron;
+    font-size:22px;
+}
+
+.screen{
+    padding:20px;
+}
+
+.card{
+    background:#0f172a;
+    border:1px solid #334155;
+    border-radius:16px;
+    padding:20px;
+    max-width:1200px;
+    margin:auto;
+}
+
+h2,h3{
+    color:#60a5fa;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border:none;
+    border-radius:10px;
+    background:#1e293b;
+    color:white;
+    font-size:14px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.2s;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.start{
+    background:#2563eb;
+    color:white;
+}
+
+.check{
+    background:#16a34a;
+    color:white;
+}
+
+.next{
+    background:#9333ea;
+    color:white;
+}
+
+.reset{
+    background:#dc2626;
+    color:white;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.container{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.bank,.workspace{
+    background:#111827;
+    border:1px solid #334155;
+    border-radius:12px;
+    padding:14px;
+}
+
+.item{
+    background:#1e293b;
+    padding:12px;
+    border-radius:10px;
+    margin:8px 0;
+    cursor:grab;
+    font-size:14px;
+}
+
+.item:hover{
+    background:#334155;
+}
+
+.zone{
+    border:2px dashed #3b82f6;
+    border-radius:10px;
+    min-height:70px;
+    padding:10px;
+    margin:10px 0;
+}
+
+.label{
+    color:#93c5fd;
+    font-size:12px;
+    margin-bottom:5px;
+}
+
+.result,.ai,.leaderboard{
+    background:#111827;
+    border-radius:10px;
+    padding:12px;
+    margin-top:12px;
+    white-space:pre-line;
+}
+
+.result{
+    border-left:4px solid #22c55e;
+}
+
+.ai{
+    border-left:4px solid #3b82f6;
+}
+
+.leaderboard{
+    border-left:4px solid #f59e0b;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+th,td{
+    border:1px solid #334155;
+    padding:8px;
+    text-align:left;
+    font-size:13px;
+}
+
+th{
+    background:#1e293b;
+}
+
+.hidden{
+    display:none;
+}
+
+@media(max-width:900px){
+
+.container{
+    grid-template-columns:1fr;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<header>AI SURAT RESMI TRAINER - SCHOOL EDITION</header>
+
+<!-- LOGIN -->
+<div class="screen" id="loginScreen">
+
+<div class="card">
+
+<h2>Identitas Siswa</h2>
+
+<input type="text" id="nama" placeholder="Nama siswa">
+<input type="text" id="kelas" placeholder="Kelas">
+<input type="text" id="absen" placeholder="Nomor absen">
+
+<button class="start" onclick="startGame()">MULAI</button>
+
+</div>
+
+</div>
+
+<!-- GAME -->
+<div class="screen hidden" id="gameScreen">
+
+<div class="card">
+
+<div class="topbar">
+
+<div id="infoSiswa"></div>
+
+<div id="timer">⏳ 120</div>
+
+<div id="paketInfo"></div>
+
+</div>
+
+<div class="container">
+
+<!-- BANK -->
+<div class="bank">
+
+<h3>BANK KOMPONEN</h3>
+
+<div id="bankContainer"></div>
+
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+<h3>STRUKTUR SURAT</h3>
+
+<div class="zone" id="z_kop" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">KOP SURAT</div>
+</div>
+
+<div class="zone" id="z_alamat" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">ALAMAT</div>
+</div>
+
+<div class="zone" id="z_tanggal" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">TANGGAL</div>
+</div>
+
+<div class="zone" id="z_nomor" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">NOMOR</div>
+</div>
+
+<div class="zone" id="z_perihal" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">PERIHAL</div>
+</div>
+
+<div class="zone" id="z_isi" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">ISI SURAT</div>
+</div>
+
+<div class="zone" id="z_penutup" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">PENUTUP</div>
+</div>
+
+<div class="zone" id="z_ttd" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">TANDA TANGAN</div>
+</div>
+
+<button class="check" onclick="check()">CEK JAWABAN</button>
+
+<button class="next" onclick="loadQuestion()">SOAL BERIKUTNYA</button>
+
+<div class="result" id="hasil">
+Menunggu evaluasi...
+</div>
+
+<div class="ai" id="ai">
+AI Diagnostic: Belum ada analisis.
+</div>
+
+</div>
+
+</div>
+
+<div class="leaderboard">
+
+<h3>HASIL SISWA (LOCAL STORAGE)</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>Nama</th>
+<th>Kelas</th>
+<th>Absen</th>
+<th>Skor</th>
+<th>Tanggal</th>
+</tr>
+</thead>
+
+<tbody id="hasilTable"></tbody>
+
+</table>
+
+<button class="reset" onclick="resetData()">
+HAPUS SEMUA DATA
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* =========================
+DATA GENERATOR
+========================= */
+
+const sekolah=[
+"SMP Negeri 1 Bandung",
+"SMA Nusantara",
+"SMK Teknologi Indonesia",
+"SMP Harapan Bangsa",
+"SMA Pertiwi"
+];
+
+const kota=[
+"Bandung",
+"Jakarta",
+"Bogor",
+"Surabaya",
+"Yogyakarta",
+"Malang"
+];
+
+const jabatan=[
+"Kepala Sekolah",
+"Ketua OSIS",
+"Pembina Pramuka",
+"Ketua Panitia",
+"Wakil Kepala Sekolah"
+];
+
+const jenisSurat=[
+
+"Undangan Rapat",
+"Surat Edaran",
+"Permohonan Izin",
+"Undangan Seminar",
+"Pemberitahuan Kegiatan",
+"Surat Dinas",
+"Undangan Workshop",
+"Undangan Lomba",
+"Surat Resmi Organisasi",
+"Undangan Bakti Sosial",
+"Permohonan Dana",
+"Undangan Musyawarah",
+"Undangan Pentas Seni",
+"Surat Tugas",
+"Undangan Upacara",
+"Surat Kerja Sama",
+"Surat Kunjungan",
+"Undangan Pelatihan",
+"Surat Peringatan",
+"Pemberitahuan Libur"
+
+];
+
+const isiSurat=[
+
+"Kami mengundang seluruh peserta untuk menghadiri kegiatan resmi sekolah.",
+
+"Dengan hormat, kami memohon izin pelaksanaan kegiatan pendidikan.",
+
+"Kegiatan ini bertujuan meningkatkan disiplin dan kerja sama siswa.",
+
+"Acara akan dilaksanakan sesuai jadwal yang telah ditentukan.",
+
+"Diharapkan seluruh peserta hadir tepat waktu dan mematuhi peraturan.",
+
+"Surat ini dibuat sebagai pemberitahuan resmi kegiatan sekolah."
+
+];
+
+const penutupList=[
+
+"Demikian surat ini kami sampaikan. Atas perhatian Saudara kami ucapkan terima kasih.",
+
+"Atas kerja sama dan perhatian yang diberikan kami sampaikan terima kasih.",
+
+"Demikian pemberitahuan ini disampaikan untuk diketahui.",
+
+"Semoga kegiatan berjalan lancar dan memberikan manfaat."
+
+];
+
+const distractors=[
+
+"Cuaca hari ini sangat cerah",
+"Salam olahraga",
+"Makan siang bersama",
+"Liburan sekolah menyenangkan",
+"Motor baru sekolah",
+"Bandung sangat dingin",
+"Pertandingan berlangsung seru"
+
+];
+
+const feedback={
+
+z_kop:"Kop surat menunjukkan identitas instansi resmi.",
+z_alamat:"Alamat melengkapi identitas instansi.",
+z_tanggal:"Tanggal menunjukkan waktu resmi surat dibuat.",
+z_nomor:"Nomor surat penting untuk administrasi.",
+z_perihal:"Perihal menjelaskan inti tujuan surat.",
+z_isi:"Isi surat harus formal dan sistematis.",
+z_penutup:"Penutup surat harus sopan dan resmi.",
+z_ttd:"Tanda tangan berfungsi sebagai legalitas."
+
+};
+
+const correct={
+
+z_kop:"kop",
+z_alamat:"alamat",
+z_tanggal:"tanggal",
+z_nomor:"nomor",
+z_perihal:"perihal",
+z_isi:"isi",
+z_penutup:"penutup",
+z_ttd:"ttd"
+
+};
+
+/* =========================
+GLOBAL
+========================= */
+
+let siswa={};
+let interval;
+let time=120;
+let currentQuestion={};
+
+/* =========================
+START GAME
+========================= */
+
+function startGame(){
+
+const nama=document.getElementById("nama").value.trim();
+const kelas=document.getElementById("kelas").value.trim();
+const absen=document.getElementById("absen").value.trim();
+
+if(!nama || !kelas || !absen){
+
+alert("Lengkapi identitas siswa.");
+
+return;
+
+}
+
+siswa={
+nama,
+kelas,
+absen
+};
+
+document.getElementById("loginScreen").classList.add("hidden");
+
+document.getElementById("gameScreen").classList.remove("hidden");
+
+document.getElementById("infoSiswa").innerHTML=
+`
+👤 ${nama} | 🏫 ${kelas} | 🔢 ${absen}
+`;
+
+loadQuestion();
+
+loadLeaderboard();
+
+}
+
+/* =========================
+UTIL
+========================= */
+
+function random(arr){
+
+return arr[Math.floor(Math.random()*arr.length)];
+
+}
+
+function shuffle(arr){
+
+return arr.sort(()=>Math.random()-0.5);
+
+}
+
+function generateDate(){
+
+const hari=Math.floor(Math.random()*28)+1;
+
+const bulan=[
+"Januari","Februari","Maret","April",
+"Mei","Juni","Juli","Agustus",
+"September","Oktober","November","Desember"
+];
+
+return `${random(kota)}, ${hari} ${random(bulan)} 2026`;
+
+}
+
+function generateNomor(){
+
+return `Nomor: ${Math.floor(Math.random()*999)}/${Math.floor(Math.random()*99)}/2026`;
+
+}
+
+/* =========================
+QUESTION GENERATOR
+========================= */
+
+function generateQuestion(){
+
+const jenis=random(jenisSurat);
+
+return {
+
+judul:jenis,
+
+data:{
+
+kop:random(sekolah),
+
+alamat:`Jl. ${random([
+"Pendidikan",
+"Merdeka",
+"Pemuda",
+"Kenanga",
+"Melati"
+])} No. ${Math.floor(Math.random()*100)+1}`,
+
+tanggal:generateDate(),
+
+nomor:generateNomor(),
+
+perihal:`Perihal: ${jenis}`,
+
+isi:random(isiSurat),
+
+penutup:random(penutupList),
+
+ttd:random(jabatan)
+
+}
+
+};
+
+}
+
+/* =========================
+LOAD QUESTION
+========================= */
+
+function loadQuestion(){
+
+clearZones();
+
+document.getElementById("hasil").innerText=
+"Menunggu evaluasi...";
+
+document.getElementById("ai").innerText=
+"AI Diagnostic: Belum ada analisis.";
+
+currentQuestion=generateQuestion();
+
+document.getElementById("paketInfo").innerText=
+"📄 "+currentQuestion.judul;
+
+let items=[];
+
+for(let key in currentQuestion.data){
+
+items.push({
+
+id:key,
+text:currentQuestion.data[key]
+
+});
+
+}
+
+shuffle(distractors).slice(0,3).forEach((d,i)=>{
+
+items.push({
+
+id:"fake"+i,
+text:d
+
+});
+
+});
+
+shuffle(items);
+
+renderItems(items);
+
+resetTimer();
+
+}
+
+/* =========================
+RENDER
+========================= */
+
+function renderItems(items){
+
+const bank=document.getElementById("bankContainer");
+
+bank.innerHTML="";
+
+items.forEach(obj=>{
+
+const div=document.createElement("div");
+
+div.className="item";
+
+div.id=obj.id;
+
+div.draggable=true;
+
+div.innerText=obj.text;
+
+div.ondragstart=drag;
+
+bank.appendChild(div);
+
+});
+
+}
+
+/* =========================
+DRAG DROP
+========================= */
+
+function allow(ev){
+
+ev.preventDefault();
+
+}
+
+function drag(ev){
+
+ev.dataTransfer.setData("text",ev.target.id);
+
+}
+
+function drop(ev){
+
+ev.preventDefault();
+
+const data=ev.dataTransfer.getData("text");
+
+const target=ev.currentTarget;
+
+if(target.querySelector(".item")) return;
+
+target.appendChild(document.getElementById(data));
+
+}
+
+function clearZones(){
+
+document.querySelectorAll(".zone").forEach(z=>{
+
+const item=z.querySelector(".item");
+
+if(item){
+
+document.getElementById("bankContainer").appendChild(item);
+
+}
+
+});
+
+}
+
+/* =========================
+CHECK
+========================= */
+
+function check(auto=false){
+
+let score=0;
+
+let result="";
+
+let ai="";
+
+for(let z in correct){
+
+const zone=document.getElementById(z);
+
+const item=zone.querySelector(".item");
+
+if(item && item.id===correct[z]){
+
+score++;
+
+result+="✔ "+z.replace("z_","")+" benar\n";
+
+ai+="✔ "+feedback[z]+"\n";
+
+}else{
+
+result+="✘ "+z.replace("z_","")+" salah\n";
+
+ai+="✘ "+feedback[z]+"\n";
+
+}
+
+}
+
+result+=`\n\nSkor: ${score}/8`;
+
+if(score===8){
+
+ai+="\n\nAI: Sangat baik. Struktur surat resmi sudah tepat.";
+
+}else if(score>=5){
+
+ai+="\n\nAI: Struktur cukup baik tetapi masih ada kesalahan.";
+
+}else{
+
+ai+="\n\nAI: Struktur surat masih perlu latihan.";
+
+}
+
+if(auto){
+
+ai+="\n(Waktu habis - evaluasi otomatis)";
+
+}
+
+document.getElementById("hasil").innerText=result;
+
+document.getElementById("ai").innerText=ai;
+
+saveResult(score);
+
+}
+
+/* =========================
+SAVE LOCAL STORAGE
+========================= */
+
+function saveResult(score){
+
+let data=
+JSON.parse(localStorage.getItem("hasil_surat")) || [];
+
+data.push({
+
+nama:siswa.nama,
+kelas:siswa.kelas,
+absen:siswa.absen,
+skor:score,
+tanggal:new Date().toLocaleString()
+
+});
+
+localStorage.setItem(
+"hasil_surat",
+JSON.stringify(data)
+);
+
+loadLeaderboard();
+
+}
+
+/* =========================
+LEADERBOARD
+========================= */
+
+function loadLeaderboard(){
+
+let data=
+JSON.parse(localStorage.getItem("hasil_surat")) || [];
+
+const table=
+document.getElementById("hasilTable");
+
+table.innerHTML="";
+
+data.reverse().forEach(d=>{
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${d.nama}</td>
+<td>${d.kelas}</td>
+<td>${d.absen}</td>
+<td>${d.skor}/8</td>
+<td>${d.tanggal}</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+/* =========================
+RESET
+========================= */
+
+function resetData(){
+
+if(confirm("Hapus semua data siswa?")){
+
+localStorage.removeItem("hasil_surat");
+
+loadLeaderboard();
+
+}
+
+}
+
+/* =========================
+TIMER
+========================= */
+
+function resetTimer(){
+
+clearInterval(interval);
+
+time=120;
+
+document.getElementById("timer").innerText=
+"⏳ "+time;
+
+interval=setInterval(()=>{
+
+time--;
+
+document.getElementById("timer").innerText=
+"⏳ "+time;
+
+if(time<=0){
+
+clearInterval(interval);
+
+check(true);
+
+}
+
+},1000);
+
+}
+
+</script>
+
+</body>
+</html>
