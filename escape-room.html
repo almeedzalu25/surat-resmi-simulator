@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Escape Room Administrasi Sekolah</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Poppins,sans-serif;
+    background:linear-gradient(180deg,#020617,#0f172a);
+    color:#e2e8f0;
+}
+
+header{
+    text-align:center;
+    padding:18px;
+    background:#111827;
+    border-bottom:1px solid #334155;
+    font-family:Orbitron;
+    font-size:22px;
+    color:#60a5fa;
+}
+
+.container{
+    max-width:1300px;
+    margin:auto;
+    padding:15px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.card{
+    background:#0f172a;
+    border:1px solid #334155;
+    border-radius:16px;
+    padding:16px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.bank,.workspace{
+    background:#111827;
+    border-radius:14px;
+    padding:14px;
+    border:1px solid #334155;
+}
+
+.item{
+    background:#1e293b;
+    padding:12px;
+    border-radius:10px;
+    margin:8px 0;
+    cursor:grab;
+    transition:0.2s;
+    font-size:14px;
+}
+
+.item:hover{
+    background:#334155;
+}
+
+.zone{
+    border:2px dashed #3b82f6;
+    border-radius:12px;
+    min-height:70px;
+    padding:10px;
+    margin:10px 0;
+}
+
+.label{
+    color:#93c5fd;
+    font-size:12px;
+    margin-bottom:5px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    margin-top:10px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.2s;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.check{
+    background:#16a34a;
+    color:white;
+}
+
+.next{
+    background:#9333ea;
+    color:white;
+}
+
+.result{
+    margin-top:15px;
+    background:#111827;
+    border-left:4px solid #22c55e;
+    padding:14px;
+    border-radius:10px;
+    white-space:pre-line;
+}
+
+.story{
+    background:#0b1220;
+    border-left:4px solid #3b82f6;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:15px;
+    line-height:1.6;
+}
+
+.success{
+    color:#4ade80;
+    font-weight:600;
+}
+
+.fail{
+    color:#f87171;
+    font-weight:600;
+}
+
+.complete{
+    text-align:center;
+    padding:40px;
+    font-size:24px;
+    color:#4ade80;
+}
+
+@media(max-width:900px){
+
+.grid{
+    grid-template-columns:1fr;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<header>
+ESCAPE ROOM ADMINISTRASI SEKOLAH
+</header>
+
+<div class="container">
+
+<div class="topbar">
+
+<div class="card">
+🎯 Level: <span id="level">1</span>/10
+</div>
+
+<div class="card">
+⏳ Waktu: <span id="timer">120</span>
+</div>
+
+<div class="card">
+🏆 Score: <span id="score">0</span>
+</div>
+
+</div>
+
+<div class="story" id="story">
+Memulai misi administrasi...
+</div>
+
+<div class="grid">
+
+<!-- BANK -->
+<div class="bank">
+
+<h3>ARSIP DOKUMEN</h3>
+
+<div id="bank"></div>
+
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+<h3>RUANG PENYUSUNAN SURAT</h3>
+
+<div class="zone" id="z_kop" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">KOP SURAT</div>
+</div>
+
+<div class="zone" id="z_nomor" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">NOMOR SURAT</div>
+</div>
+
+<div class="zone" id="z_tanggal" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">TANGGAL</div>
+</div>
+
+<div class="zone" id="z_perihal" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">PERIHAL</div>
+</div>
+
+<div class="zone" id="z_isi" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">ISI SURAT</div>
+</div>
+
+<div class="zone" id="z_penutup" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">PENUTUP</div>
+</div>
+
+<div class="zone" id="z_ttd" ondrop="drop(event)" ondragover="allow(event)">
+<div class="label">TANDA TANGAN</div>
+</div>
+
+<button class="check" onclick="checkAnswer()">
+BUKA PINTU RUANG
+</button>
+
+<button class="next" onclick="nextLevel()" id="nextBtn" style="display:none;">
+LANJUT KE LEVEL BERIKUTNYA
+</button>
+
+<div class="result" id="result">
+Susun surat resmi untuk membuka ruangan berikutnya.
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* =====================
+DATABASE
+===================== */
+
+const sekolah=[
+"SMP Negeri 1 Bandung",
+"SMA Nusantara",
+"SMK Teknologi Indonesia",
+"SMP Harapan Bangsa",
+"SMA Pertiwi"
+];
+
+const perihalList=[
+"Undangan Rapat",
+"Surat Tugas",
+"Undangan Seminar",
+"Pemberitahuan Kegiatan",
+"Undangan Pelatihan",
+"Permohonan Izin",
+"Undangan Pentas Seni",
+"Surat Dinas",
+"Undangan Musyawarah",
+"Undangan Upacara"
+];
+
+const isiList=[
+"Kami mengundang seluruh peserta untuk menghadiri kegiatan resmi sekolah.",
+"Kegiatan akan dilaksanakan sesuai jadwal yang telah ditentukan.",
+"Seluruh siswa diharapkan hadir tepat waktu.",
+"Acara ini bertujuan meningkatkan kerja sama dan disiplin siswa.",
+"Surat ini dibuat sebagai pemberitahuan resmi sekolah."
+];
+
+const penutupList=[
+"Demikian surat ini kami sampaikan.",
+"Atas perhatian Saudara kami ucapkan terima kasih.",
+"Semoga kegiatan berjalan dengan lancar.",
+"Demikian pemberitahuan ini untuk diketahui."
+];
+
+const jabatanList=[
+"Kepala Sekolah",
+"Ketua OSIS",
+"Pembina Pramuka",
+"Wakil Kepala Sekolah",
+"Ketua Panitia"
+];
+
+const distractors=[
+"Cuaca hari ini cerah",
+"Selamat pagi semuanya",
+"Motor baru sekolah",
+"Pertandingan berlangsung seru",
+"Liburan sekolah menyenangkan",
+"Makan siang bersama",
+"Salam olahraga"
+];
+
+const stories=[
+
+"Level 1: Anda baru masuk ruang administrasi sekolah.",
+
+"Level 2: Arsip surat mulai berantakan. Susun kembali.",
+
+"Level 3: Kepala sekolah meminta surat resmi segera selesai.",
+
+"Level 4: Sistem keamanan ruang arsip mulai aktif.",
+
+"Level 5: Nomor surat hilang di antara dokumen palsu.",
+
+"Level 6: Anda menemukan surat rahasia sekolah.",
+
+"Level 7: Waktu semakin sedikit. Selesaikan surat cepat.",
+
+"Level 8: Arsip digital rusak. Struktur harus tepat.",
+
+"Level 9: Ruang administrasi utama hampir terbuka.",
+
+"Level 10: Final Room — buka ruang utama administrasi."
+
+];
+
+/* =====================
+GLOBAL
+===================== */
+
+let level=1;
+let score=0;
+let timer=120;
+let interval;
+let currentQuestion={};
+
+const correct={
+z_kop:"kop",
+z_nomor:"nomor",
+z_tanggal:"tanggal",
+z_perihal:"perihal",
+z_isi:"isi",
+z_penutup:"penutup",
+z_ttd:"ttd"
+};
+
+/* =====================
+UTIL
+===================== */
+
+function random(arr){
+return arr[Math.floor(Math.random()*arr.length)];
+}
+
+function shuffle(arr){
+return arr.sort(()=>Math.random()-0.5);
+}
+
+/* =====================
+START
+===================== */
+
+generateQuestion();
+startTimer();
+
+/* =====================
+TIMER
+===================== */
+
+function startTimer(){
+
+clearInterval(interval);
+
+timer=120;
+
+document.getElementById("timer").innerText=timer;
+
+interval=setInterval(()=>{
+
+timer--;
+
+document.getElementById("timer").innerText=timer;
+
+if(timer<=0){
+
+clearInterval(interval);
+
+document.getElementById("result").innerHTML=
+"<span class='fail'>Waktu habis. Ruangan terkunci.</span>";
+
+}
+
+},1000);
+
+}
+
+/* =====================
+QUESTION GENERATOR
+===================== */
+
+function generateQuestion(){
+
+document.getElementById("story").innerText=
+stories[level-1];
+
+document.getElementById("level").innerText=level;
+
+document.getElementById("nextBtn").style.display="none";
+
+clearZones();
+
+currentQuestion={
+
+kop:random(sekolah),
+
+nomor:`Nomor: ${Math.floor(Math.random()*900)+100}/${level}/2026`,
+
+tanggal:`Bandung, ${Math.floor(Math.random()*28)+1} Mei 2026`,
+
+perihal:`Perihal: ${random(perihalList)}`,
+
+isi:random(isiList),
+
+penutup:random(penutupList),
+
+ttd:random(jabatanList)
+
+};
+
+let items=[];
+
+for(let key in currentQuestion){
+
+items.push({
+id:key,
+text:currentQuestion[key]
+});
+}
+
+shuffle(distractors).slice(0,level>=5 ? 4 : 2).forEach((d,i)=>{
+
+items.push({
+id:"fake"+i,
+text:d
+});
+
+});
+
+shuffle(items);
+
+renderItems(items);
+
+}
+
+/* =====================
+RENDER ITEMS
+===================== */
+
+function renderItems(items){
+
+const bank=document.getElementById("bank");
+
+bank.innerHTML="";
+
+items.forEach(obj=>{
+
+const div=document.createElement("div");
+
+div.className="item";
+
+div.id=obj.id;
+
+div.draggable=true;
+
+div.innerText=obj.text;
+
+div.ondragstart=drag;
+
+bank.appendChild(div);
+
+});
+
+}
+
+/* =====================
+DRAG DROP
+===================== */
+
+function allow(ev){
+ev.preventDefault();
+}
+
+function drag(ev){
+ev.dataTransfer.setData("text",ev.target.id);
+}
+
+function drop(ev){
+
+ev.preventDefault();
+
+const data=ev.dataTransfer.getData("text");
+
+const item=document.getElementById(data);
+
+const zone=ev.currentTarget;
+
+if(zone.querySelector(".item")) return;
+
+zone.appendChild(item);
+
+}
+
+function clearZones(){
+
+document.querySelectorAll(".zone").forEach(z=>{
+
+const item=z.querySelector(".item");
+
+if(item){
+document.getElementById("bank").appendChild(item);
+}
+
+});
+
+}
+
+/* =====================
+CHECK ANSWER
+===================== */
+
+function checkAnswer(){
+
+let benar=0;
+
+for(let z in correct){
+
+const zone=document.getElementById(z);
+
+const item=zone.querySelector(".item");
+
+if(item && item.id===correct[z]){
+benar++;
+}
+
+}
+
+if(benar===7){
+
+score+=10;
+
+document.getElementById("score").innerText=score;
+
+document.getElementById("result").innerHTML=
+`
+<span class='success'>
+✔ LEVEL ${level} BERHASIL!
+</span>
+
+Pintu administrasi berhasil dibuka.
+`;
+
+clearInterval(interval);
+
+document.getElementById("nextBtn").style.display="block";
+
+}else{
+
+document.getElementById("result").innerHTML=
+`
+<span class='fail'>
+✘ Struktur surat masih salah.
+</span>
+
+Anda harus memperbaiki arsip sebelum ruangan terbuka.
+`;
+
+}
+
+}
+
+/* =====================
+NEXT LEVEL
+===================== */
+
+function nextLevel(){
+
+level++;
+
+if(level>10){
+
+document.body.innerHTML=
+`
+<div class="complete">
+
+🏆 SELAMAT!<br><br>
+
+Anda berhasil menyelesaikan
+Escape Room Administrasi Sekolah.<br><br>
+
+Final Score: ${score}
+
+</div>
+`;
+
+return;
+
+}
+
+generateQuestion();
+
+startTimer();
+
+document.getElementById("result").innerText=
+"Susun surat resmi untuk membuka ruangan berikutnya.";
+
+}
+
+</script>
+
+</body>
+</html>
